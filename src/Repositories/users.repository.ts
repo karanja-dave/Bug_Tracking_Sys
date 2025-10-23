@@ -19,7 +19,7 @@ export const getUserById = async (id: number): Promise<User[]> => {
     return result.recordset[0];
 };
 
-//create new user -user: any changed to user: NewUser
+//create new user
 export const createUser = async (user: NewUser) => {
     const pool = await getPool();
     await pool
@@ -28,11 +28,15 @@ export const createUser = async (user: NewUser) => {
         .input('last_name', user.last_name)
         .input('email', user.email)
         .input('role_user', user.role_user)
-        .input('password_hash', 'defaultpasswordhash') // Placeholder for password hash
+        .input('password_hash', user.password_hash || 'defaultpasswordhash')
         .input('created_at', new Date())
-        .query('INSERT INTO Users (first_name, last_name, email, role_user, password_hash, created_at)');
+        .query(`
+            INSERT INTO Users 
+            (first_name, last_name, email, role_user, password_hash, created_at)
+            VALUES (@first_name, @last_name, @email, @role_user, @password_hash, @created_at)
+        `);
     return { message: 'User created successfully' };
-}
+};
 
 
 

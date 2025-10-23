@@ -6,7 +6,8 @@ export const getUsers = async (req = request, res = response) => {
         const users = await userService.listUsers();
         res.status(200).json(users);
     } catch (error: any) {
-        res.status(500).json({ error.message });
+       res.status(500).json({ message: error.message });
+
     }
 };
 
