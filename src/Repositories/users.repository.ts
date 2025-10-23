@@ -1,3 +1,4 @@
+// import modules 
 import { getPool } from '../db/config'
 import { NewUser, UpdateUser, User } from '../Types/users';
 
