@@ -1,7 +1,7 @@
-import {request, response} from 'express';
+import {Request, Response} from 'express';
 import * as userService from '../services/user.service';
 
-export const getUsers = async (req = request, res = response) => {
+export const getUsers = async (req:Request, res:Response) => {
     try {
         const users = await userService.listUsers();
         res.status(200).json(users);
@@ -13,7 +13,7 @@ export const getUsers = async (req = request, res = response) => {
 
 
 //get user by id
-export const getUserById = async (req = request, res = response) => {
+export const getUserById = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     try {
         const user = await userService.getUser(id);
@@ -30,7 +30,7 @@ export const getUserById = async (req = request, res = response) => {
 }
 
 //create new user
-export const createUser = async (req = request, res = response) => {
+export const createUser = async (req: Request, res:Response) => {
     const user = req.body;
     try {
         const result = await userService.createUser(user);
@@ -42,7 +42,7 @@ export const createUser = async (req = request, res = response) => {
 
 
 //update a user
-export const updateUser = async (req = request, res = response) => {
+export const updateUser = async (req:Request, res:Response) => {
     const id = parseInt(req.params.id);
 
     //update
@@ -63,7 +63,7 @@ export const updateUser = async (req = request, res = response) => {
 
 
 //delete a user
-export const deleteUser = async (req = request, res = response) => {
+export const deleteUser = async (req:Request, res: Response) => {
     const id = parseInt(req.params.id);
 
     //delete
@@ -78,6 +78,25 @@ export const deleteUser = async (req = request, res = response) => {
             } else {
             res.status(500).json({ error: error.message });
         }
+
+
     }
 }
 
+// user login function 
+export const loginUser=async(req:Request,res:Response)=>{
+    try {
+        const {email,password}=req.body
+        const result= await userService.loginUser(email,password)
+        res.status(200).json(result)
+    } catch (error:any) {
+        if(error.message=='User not found'){
+            res.status(400).json({message:'User not found'})
+        }else if(error.message=="Invalid Credentials"){
+            res.status(404).json({message:'Invalid Credentilas'})
+        }else{
+            res.status(500).json({message:'Internal Server Error'})
+        }
+        
+    }
+}
