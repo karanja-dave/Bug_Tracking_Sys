@@ -73,3 +73,13 @@ export const deleteUser = async (id: number) => {
         .query('DELETE FROM Users WHERE userid = @id');
     return { message: 'User deleted successfully' };
 }
+
+// get user by email :email used as login credential 
+export const getUserByEmail=async(email:string):Promise<User|null>=>{
+    const pool = await getPool();
+    const result= await pool
+    .request()
+    .input('email',email)
+    .query('SELECT *FROM Users WHERE email=@email')
+    return result.recordset[0] || null //available users returned otherwise null
+}

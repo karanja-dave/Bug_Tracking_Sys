@@ -1,10 +1,11 @@
 // import packages 
 import dotenv from 'dotenv'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 // import modules 
 import *as userRepositories from '../Repositories/users.repository'
-import { NewUser,UpdateUser } from '../Types/users.types'
+import { NewUser,UpdateUser,User } from '../Types/users.types'
 
 // load env variables 
 dotenv.config()
@@ -61,4 +62,41 @@ export const deleteUser = async(id:number)=>{
     }
     await ensureUserExists(id);
     return await userRepositories.deleteUser(id)
+}
+
+// user log in funtion 
+export const loginUser=async(email:string,password:string)=>{
+    const user =await userRepositories.getUserByEmail(email)
+    if(!user){
+        throw new Error('User not found')
+    }
+    // compare is provide pass is same as hashed one in DB
+    const isMatch = await bcrypt.compare(password,user.password_hash)
+    if(!isMatch){
+        throw new Error('Invalid Credentials')
+    }
+    // create jwt payload:used to generate token 
+    const payLoad={
+        sub:user.userid,
+        first_name:user.first_name,
+        last_name:user.last_name,
+        exp:Math.floor(Date.now()/1000+60*60)
+    }
+    // generate token 
+    const secret=process.env.JWT_SECRET as string
+    if(!secret) throw new Error('JWT is not defined')
+    // generated token can be used as as a digitila identity of user for only 1 hour 
+    const token=jwt.sign(payLoad,secret)
+
+    // return successful login 
+    return{
+        message: 'Login successfull',
+        token,
+        user:{ //helps you have record of logged in users 
+            userid:user.userid,
+            FN:user.first_name,
+            LN:user.last_name,
+            email:user.email,           
+}
+    }
 }

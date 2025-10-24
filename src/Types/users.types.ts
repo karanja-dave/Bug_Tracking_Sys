@@ -4,6 +4,7 @@ export interface User {
     last_name: string;
     email: string;
     role_user: string;
+    password_hash: string;
 }
 
 export interface NewUser {
