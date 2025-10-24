@@ -12,7 +12,7 @@ const userRoutes = (app: Express) => {
     app.post("/adduser", userController.createUser);
 
     // Update an existing user
-    app.put("/updateuser/:id", userController.updateUser);
+    app.patch("/updateuser/:id", userController.updateUser);
 
     // Delete a user
     app.delete("/deleteuser/:id", userController.deleteUser);

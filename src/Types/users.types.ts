@@ -19,7 +19,8 @@ export interface NewUser {
 export interface UpdateUser {
     first_name?: string;
     last_name?: string;
-    email: string;
-    role_user: string;
+    email?: string;
+    role_user?: string;
+    password_hash?: string;
 }
 

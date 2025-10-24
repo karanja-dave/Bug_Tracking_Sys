@@ -1,6 +1,6 @@
 // import modules 
 import { getPool } from '../db/config'
-import { NewUser, UpdateUser, User } from '../Types/users';
+import { NewUser, UpdateUser, User } from '../Types/users.types';
 
 //get all users
 export const getUsers = async (): Promise<User[]> => {
@@ -40,20 +40,28 @@ export const createUser = async (user: NewUser) => {
 
 
 
-//update a user
+//update a user : the function updates only records provided
 export const updateUser = async (id: number, user: UpdateUser) => {
-    const pool = await getPool();
-    await pool
-        .request()
-        .input('id', id)
-        .input('first_name', user.first_name)
-        .input('last_name', user.last_name)
-        .input('email', user.email)
-        .input('role_user', user.role_user)
-        .input('created_at', new Date())
-        .query('UPDATE Users SET first_name = @first_name, last_name = @last_name, email= @email, role_user=@role_user, created_at=@created_at WHERE userid = @id');
-    return { message: 'User updated successfully' };
-}
+  const pool = await getPool();
+  const request = pool.request();
+
+  // Prepare the inputs dynamically
+  const fields = Object.entries(user)
+    .filter(([_, value]) => value !== undefined)
+    .map(([key, value]) => {
+      request.input(key, value);
+      return `${key} = @${key}`;
+    });
+
+  if (fields.length === 0) throw new Error('No fields to update');
+
+  request.input('id', id);
+
+  const query = `UPDATE Users SET ${fields.join(', ')} WHERE userid = @id`;
+  await request.query(query);
+
+  return { message: 'User updated successfully' };
+};
 
 
 //delete a user

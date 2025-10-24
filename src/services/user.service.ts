@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt'
 
 // import modules 
 import *as userRepositories from '../Repositories/users.repository'
-import { NewUser,UpdateUser } from '../Types/users'
+import { NewUser,UpdateUser } from '../Types/users.types'
 
 // load env variables 
 dotenv.config()
@@ -46,6 +46,11 @@ export const updateUser=async(id:number,user:UpdateUser)=>{
         throw new Error('Invalid User Id')
     }
     await ensureUserExists(id);
+    // hash pass on update
+    if(user.password_hash){
+        user.password_hash=await bcrypt.hash(user.password_hash,10)
+        console.log('Hashed password',user.password_hash)
+    }
     return await userRepositories.updateUser(id,user)
 }
 
