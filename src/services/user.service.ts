@@ -80,6 +80,7 @@ export const loginUser=async(email:string,password:string)=>{
         sub:user.userid,
         first_name:user.first_name,
         last_name:user.last_name,
+        role:user.role_user,
         exp:Math.floor(Date.now()/1000+60*60)
     }
     // generate token 
@@ -96,7 +97,8 @@ export const loginUser=async(email:string,password:string)=>{
             userid:user.userid,
             FN:user.first_name,
             LN:user.last_name,
-            email:user.email,           
+            email:user.email,  
+            role:user.role_user         
 }
     }
 }
